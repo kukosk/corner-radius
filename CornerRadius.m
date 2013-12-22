@@ -4,37 +4,56 @@
 
 #import "CornerRadius.h"
 
-#define DEFAULT_RADIUS 6
+#define DEFAULT_RADIUS 3.0
+#define DEFAULT_COLOR [UIColor blackColor]
+
 
 @implementation CornerRadius
-@synthesize radius;
 
-- (id)init
+- (void)initStuff_CornerRadius
 {
-    self = [super initWithFrame:[UIScreen mainScreen].applicationFrame];
-    if(self)
-    {
-        // Initialization
-        self.backgroundColor = [UIColor clearColor];
-        [self setUserInteractionEnabled:NO];
-        self.radius = DEFAULT_RADIUS;
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setNeedsDisplay) name:UIDeviceOrientationDidChangeNotification object:nil];
-    }
-    return self;
+	self.backgroundColor = [UIColor clearColor];
+	self.userInteractionEnabled = NO;
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setNeedsDisplay) name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
-- (id)initWithRadius:(NSInteger)r
+- (id)initWithRadius:(NSInteger)radius color:(UIColor *)color
 {
-    self = [self init];
-    if(self) self.radius = r;
-    return self;
+    if(self = [super initWithFrame:[self mainScreenFrame]])
+	{
+		self.radius = radius;
+		self.color = color;
+		
+		[self initStuff_CornerRadius];
+	}
+	
+	return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+	self = [self initWithRadius:DEFAULT_RADIUS color:DEFAULT_COLOR];
+	return self;
+}
+
+- (id)initWithFrame:(CGRect)frame
+{
+	self = [self initWithRadius:DEFAULT_RADIUS color:DEFAULT_COLOR];
+	return self;
+}
+
+- (CGRect)mainScreenFrame
+{
+	return [UIScreen mainScreen].applicationFrame;
 }
 
 - (void)drawRect:(CGRect)rect
 {
-    self.frame = [UIScreen mainScreen].applicationFrame;
+    self.frame = [self mainScreenFrame];
     CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetRGBFillColor(context, 0, 0, 0, 1);
+	
+	[self.color set];
     
     // Bottom left corner
     CGContextMoveToPoint(context, rect.origin.x, rect.origin.y + rect.size.height);
@@ -53,6 +72,11 @@
     CGContextAddArc(context, rect.origin.x + self.radius, rect.origin.y + self.radius, self.radius, -M_PI / 2, M_PI, 1);
     
     CGContextFillPath(context);
+}
+
+- (void)dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 @end
