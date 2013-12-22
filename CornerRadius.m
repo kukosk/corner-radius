@@ -7,7 +7,6 @@
 #define DEFAULT_RADIUS 3.0
 #define DEFAULT_COLOR [UIColor blackColor]
 
-
 @implementation CornerRadius
 
 - (void)initStuff_CornerRadius
@@ -15,15 +14,17 @@
 	self.backgroundColor = [UIColor clearColor];
 	self.userInteractionEnabled = NO;
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setNeedsDisplay) name:UIDeviceOrientationDidChangeNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFrame) name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (id)initWithRadius:(NSInteger)radius color:(UIColor *)color
 {
-    if(self = [super initWithFrame:[self mainScreenFrame]])
+    if(self = [super initWithFrame:[self appFrame]])
 	{
 		self.radius = radius;
 		self.color = color;
+		
+		self.contentMode = UIViewContentModeRedraw;
 		
 		[self initStuff_CornerRadius];
 	}
@@ -43,33 +44,37 @@
 	return self;
 }
 
-- (CGRect)mainScreenFrame
+- (CGRect)appFrame
 {
 	return [UIScreen mainScreen].applicationFrame;
 }
 
+- (void)updateFrame
+{
+	self.frame = [self appFrame];
+}
+
 - (void)drawRect:(CGRect)rect
 {
-    self.frame = [self mainScreenFrame];
     CGContextRef context = UIGraphicsGetCurrentContext();
 	
 	[self.color set];
     
     // Bottom left corner
-    CGContextMoveToPoint(context, rect.origin.x, rect.origin.y + rect.size.height);
-    CGContextAddArc(context, rect.origin.x + self.radius, rect.origin.y + rect.size.height - self.radius, self.radius, M_PI, M_PI / 2, 1); //STS fixed
-    
+	CGContextMoveToPoint(context, rect.origin.x, rect.origin.y + rect.size.height);
+	CGContextAddArc(context, rect.origin.x + self.radius, rect.origin.y + rect.size.height - self.radius, self.radius, M_PI, M_PI / 2, 1);
+	
     // Bottom right corner
-    CGContextMoveToPoint(context, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height);
-    CGContextAddArc(context, rect.origin.x + rect.size.width - self.radius, rect.origin.y + rect.size.height - self.radius, self.radius, M_PI / 2, 0.0f, 1);
-    
+	CGContextMoveToPoint(context, rect.origin.x + rect.size.width, rect.origin.y + rect.size.height);
+	CGContextAddArc(context, rect.origin.x + rect.size.width - self.radius, rect.origin.y + rect.size.height - self.radius, self.radius, M_PI / 2, 0.0f, 1);
+	
     // Top right corner
-    CGContextMoveToPoint(context, rect.origin.x + rect.size.width, rect.origin.y);
-    CGContextAddArc(context, rect.origin.x + rect.size.width - self.radius, rect.origin.y + self.radius, self.radius, 0.0f, -M_PI / 2, 1);
-    
+	CGContextMoveToPoint(context, rect.origin.x + rect.size.width, rect.origin.y);
+	CGContextAddArc(context, rect.origin.x + rect.size.width - self.radius, rect.origin.y + self.radius, self.radius, 0.0f, -M_PI / 2, 1);
+		
     // Top left corner
-    CGContextMoveToPoint(context, rect.origin.x, rect.origin.y);
-    CGContextAddArc(context, rect.origin.x + self.radius, rect.origin.y + self.radius, self.radius, -M_PI / 2, M_PI, 1);
+	CGContextMoveToPoint(context, rect.origin.x, rect.origin.y);
+	CGContextAddArc(context, rect.origin.x + self.radius, rect.origin.y + self.radius, self.radius, -M_PI / 2, M_PI, 1);
     
     CGContextFillPath(context);
 }
