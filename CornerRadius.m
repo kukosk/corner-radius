@@ -15,6 +15,7 @@
 	self.userInteractionEnabled = NO;
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateFrame) name:UIDeviceOrientationDidChangeNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillChangeStatusBarFrame:) name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
 }
 
 - (id)initWithRadius:(NSInteger)radius color:(UIColor *)color
@@ -31,6 +32,15 @@
 	}
 	
 	return self;
+}
+
+- (void)applicationWillChangeStatusBarFrame:(NSNotification *)notif
+{
+	[UIView animateWithDuration:0.35 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^
+	{
+		[self updateFrame];
+	}
+	completion:nil];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder
@@ -97,6 +107,7 @@
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillChangeStatusBarFrameNotification object:nil];
 }
 
 @end
