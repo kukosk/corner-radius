@@ -37,11 +37,11 @@
 
 - (void)applicationWillChangeStatusBarFrame:(NSNotification *)notif
 {
-	[UIView animateWithDuration:0.35 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^
-	{
+	[UIView animateWithDuration:0.35 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^ {
 		[self updateFrame];
-	}
-	completion:nil];
+	} completion:^(BOOL finished) {
+        [self updateFrame];
+    }];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder
